@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+model User {
+  id         String   @id @default(uuid())
+  nome       String
+  email      String   @unique
+  senha      String // storing hash
+  role       Role     @default(CUSTOMER)
+  created_at DateTime @default(now())
+
+  reviews   Review[]
+  cart      CartItem[]
+  orders    Order[]
+
+  @@map("users")
+}
+
+model Category {
+  id   String @id @default(uuid())
+  nome String
+  slug String @unique
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String
+  preco       Float
+  imagem_url  String?
+  estoque     Int      @default(0)
+  destaque    Boolean  @default(false)
+  categoria_id String
+  created_at  DateTime @default(now())
+
+  categoria Category @relation(fields: [categoria_id], references: [id])
+
+  reviews   Review[]
+  cart      CartItem[]
+  orderItems OrderItem[]
+
+  @@map("products")
+}
+
+model Review {
+  id          String @id @default(uuid())
+  rating      Int    // 1 a 5
+  comentario  String?
+  user_id     String
+  product_id  String
+
+  user    User    @relation(fields: [user_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("reviews")
+}
+
+model CartItem {
+  id         String @id @default(uuid())
+  user_id    String
+  product_id String
+  quantidade Int
+
+  user    User    @relation(fields: [user_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("cart_items")
+}
+
+model Order {
+  id         String      @id @default(uuid())
+  user_id    String
+  status     OrderStatus @default(PENDING)
+  total      Float
+  created_at DateTime    @default(now())
+
+  user       User        @relation(fields: [user_id], references: [id])
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String @id @default(uuid())
+  order_id       String
+  product_id     String
+  quantidade     Int
+  preco_unitario Float
+
+  order   Order   @relation(fields: [order_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("order_items")
+}
