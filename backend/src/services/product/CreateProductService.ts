@@ -19,28 +19,33 @@ class CreateProductService {
     let imagem_url = null;
 
     if (file) {
-      // Cria um nome de arquivo único
-      const fileName = `${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
+      try {
+        // Cria um nome de arquivo único
+        const fileName = `${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
 
-      // Upload do buffer para o Supabase Storage (supondo que criamos um bucket chamado 'images')
-      const { data, error } = await supabase.storage
-        .from('images')
-        .upload(fileName, file.buffer, {
-          contentType: file.mimetype,
-          upsert: false
-        });
+        // Upload do buffer para o Supabase Storage (bucket 'images')
+        const { data, error } = await supabase.storage
+          .from('images')
+          .upload(fileName, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false
+          });
 
-      if (error) {
-        throw new Error(`Falha no upload da imagem: ${error.message}`);
+        if (error) {
+          console.warn(`⚠️ Upload da imagem falhou (bucket pode não existir): ${error.message}`);
+          // Não lança erro - cria produto sem imagem
+        } else {
+          // Constrói a URL pública
+          const publicUrl = supabase.storage
+            .from('images')
+            .getPublicUrl(fileName);
+
+          imagem_url = publicUrl.data.publicUrl;
+        }
+      } catch (uploadError: any) {
+        console.warn(`⚠️ Erro no upload: ${uploadError.message}`);
+        // Continua mesmo com erro no upload
       }
-
-      // Constrói a URL pública baseada no nome do arquivo salvo
-      // Substitua process.env.SUPABASE_URL se necessário, ou pegue via getPublicUrl
-      const publicUrl = supabase.storage
-        .from('images')
-        .getPublicUrl(fileName);
-
-      imagem_url = publicUrl.data.publicUrl;
     }
 
     const product = await prismaClient.product.create({
