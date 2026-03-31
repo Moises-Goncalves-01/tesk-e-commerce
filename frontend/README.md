@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# 🎨 Tech Store — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web do e-commerce Tech Store, construída com React, Vite e TypeScript.
 
-Currently, two official plugins are available:
+## Início Rápido
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+# Instalar dependências
+npm install
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Iniciar servidor de desenvolvimento
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> 🚀 Aplicação disponível em `http://localhost:5173`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Design
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+O frontend usa o tema **Dark Mode Premium**:
+
+- 🌑 Fundos escuros com glassmorphism sutil
+- 💎 Detalhes em azul neon e roxo
+- 🔤 Tipografia **Inter** (Google Fonts)
+- 📱 Layout **totalmente responsivo** (Mobile-First)
+- ✨ Micro-animações e transições suaves
+
+## Estrutura de Pastas
+
 ```
+src/
+├── components/
+│   └── layout/
+│       ├── Navbar/         # Barra de navegação (cliente)
+│       └── AdminLayout/    # Layout do painel admin (sidebar)
+├── contexts/
+│   └── AuthContext.tsx     # Gerenciamento de sessão/JWT
+├── pages/
+│   ├── Auth/
+│   │   └── Login.tsx       # Página de login
+│   └── Admin/
+│       ├── Dashboard/      # Visão geral com estatísticas
+│       ├── Products/       # CRUD de produtos + upload
+│       ├── Categories/     # CRUD de categorias
+│       └── Orders/         # Gestão de status de pedidos
+├── routes/
+│   └── index.tsx           # Rotas protegidas e públicas
+├── services/
+│   └── api.ts              # Configuração do Axios + interceptor JWT
+└── index.css               # Design System (variáveis, classes globais)
+```
+
+## Páginas
+
+| Rota | Página | Acesso |
+|---|---|---|
+| `/` | Home (Vitrine) | Público |
+| `/login` | Login | Público |
+| `/admin` | Dashboard Admin | Admin |
+| `/admin/products` | Gestão de Produtos | Admin |
+| `/admin/categories` | Gestão de Categorias | Admin |
+| `/admin/orders` | Gestão de Pedidos | Admin |
+
+## Conexão com o Backend
+
+O frontend se comunica com a API via Axios. A configuração está em `src/services/api.ts`:
+
+- **Base URL:** `http://localhost:3333`
+- **Token JWT:** Adicionado automaticamente via interceptor (`@TechStore:token` no localStorage)
+
+## Scripts
+
+| Comando | Descrição |
+|---|---|
+| `npm run dev` | Servidor de desenvolvimento com hot-reload |
+| `npm run build` | Build de produção otimizado |
+| `npm run preview` | Preview do build de produção |
+| `npm run lint` | Verificação de código com ESLint |
+
+> 📌 Documentação completa no [README principal](../README.md).

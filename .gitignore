@@ -1,3 +1,37 @@
+# Dependências
 node_modules/
+
+# Build
 dist/
+build/
+
+# Variáveis de ambiente (NUNCA commitar!)
 .env
+.env.local
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache
+.cache/
+.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Prisma
+prisma/*.db
+
+# Uploads temporários
+tmp/
+uploads/
