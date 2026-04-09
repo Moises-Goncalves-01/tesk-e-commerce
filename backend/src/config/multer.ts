@@ -1,10 +1,19 @@
 import multer from 'multer';
+import crypto from 'crypto';
+import path from 'path';
 
-// Upload configuration using Memory Storage
-// This allows us to intercept the file buffer and send it directly to Supabase via API
-// without having to temporarily save it to the local disk.
+// Configuração para salvar as imagens localmente na pasta /tmp do backend
 export const uploadConfig = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: path.resolve(__dirname, '..', '..', 'tmp'),
+    filename: (req, file, cb) => {
+      // Gera um hash para não ter arquivos com nomes iguais
+      const fileHash = crypto.randomBytes(16).toString('hex');
+      const fileName = `${fileHash}-${file.originalname.replace(/\s+/g, '-')}`;
+      
+      cb(null, fileName);
+    }
+  }),
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB max
   },
@@ -14,7 +23,7 @@ export const uploadConfig = multer({
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only JPEG, PNG and WEBP are allowed.'));
+      cb(new Error('Tipo de arquivo inválido. Apenas JPEG, PNG e WEBP são permitidos.'));
     }
   },
 });

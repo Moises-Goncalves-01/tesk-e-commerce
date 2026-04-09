@@ -21,6 +21,10 @@ class AddItemService {
       throw new Error('Produto não encontrado');
     }
 
+    if (quantidade > productExists.estoque) {
+      throw new Error('Quantidade solicitada excede o estoque disponível');
+    }
+
     // Verifica se já está no carrinho
     const itemAlreadyInCart = await prismaClient.cartItem.findFirst({
       where: {
@@ -30,6 +34,11 @@ class AddItemService {
     });
 
     if (itemAlreadyInCart) {
+      const novaQuantidade = itemAlreadyInCart.quantidade + quantidade;
+      if (novaQuantidade > productExists.estoque) {
+        throw new Error('Quantidade total no carrinho excede o estoque disponível');
+      }
+
       // Já está no carrinho, apenas soma a quantidade
       const cartItem = await prismaClient.cartItem.update({
         where: { id: itemAlreadyInCart.id },

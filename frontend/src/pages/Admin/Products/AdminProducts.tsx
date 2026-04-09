@@ -95,11 +95,7 @@ export const AdminProducts = () => {
 
       const response = await api.post('/product', data);
       
-      if (imageFile && !response.data.imagem_url) {
-        alert('Produto cadastrado com sucesso!\n\n⚠️ A imagem não foi enviada (o bucket de imagens do Supabase pode não existir ainda). Crie o bucket "images" no painel do Supabase para habilitar uploads.');
-      } else {
-        alert('Produto cadastrado com sucesso!');
-      }
+      alert('Produto cadastrado com sucesso!');
       
       // Reseta form e recarrega
       setNome('');

@@ -9,9 +9,10 @@ import { AdminProducts } from '../pages/Admin/Products/AdminProducts';
 import { AdminCategories } from '../pages/Admin/Categories/AdminCategories';
 import { AdminOrders } from '../pages/Admin/Orders/AdminOrders';
 
-// Client Layout
+// Client Pages
 import { Navbar } from '../components/layout/Navbar/Navbar';
 import { Login } from '../pages/Auth/Login';
+import { Home } from '../pages/Client/Home/Home';
 
 function PrivateRoute({ children, reqAdmin = false }: { children: JSX.Element, reqAdmin?: boolean }) {
   const { isAuthenticated, user, loading } = useContext(AuthContext);
@@ -33,7 +34,7 @@ export function AppRoutes() {
   return (
     <Routes>
       {/* Rotas de Cliente */}
-      <Route path="/" element={<><Navbar /><div style={{padding:'2rem'}}>Home em construcao</div></>} />
+      <Route path="/" element={<><Navbar /><Home /></>} />
       <Route path="/login" element={<Login />} />
 
       {/* Rotas do Painel Administrativo */}

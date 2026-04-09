@@ -16,36 +16,21 @@ class CreateProductService {
       throw new Error('Preencha os dados corretamente');
     }
 
+    if (Number(preco) <= 0) {
+      throw new Error('O preço deve ser maior que zero');
+    }
+
+    if (Number(estoque) < 0) {
+      throw new Error('O estoque não pode ser negativo');
+    }
+
     let imagem_url = null;
 
     if (file) {
-      try {
-        // Cria um nome de arquivo único
-        const fileName = `${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
-
-        // Upload do buffer para o Supabase Storage (bucket 'images')
-        const { data, error } = await supabase.storage
-          .from('images')
-          .upload(fileName, file.buffer, {
-            contentType: file.mimetype,
-            upsert: false
-          });
-
-        if (error) {
-          console.warn(`⚠️ Upload da imagem falhou (bucket pode não existir): ${error.message}`);
-          // Não lança erro - cria produto sem imagem
-        } else {
-          // Constrói a URL pública
-          const publicUrl = supabase.storage
-            .from('images')
-            .getPublicUrl(fileName);
-
-          imagem_url = publicUrl.data.publicUrl;
-        }
-      } catch (uploadError: any) {
-        console.warn(`⚠️ Erro no upload: ${uploadError.message}`);
-        // Continua mesmo com erro no upload
-      }
+      // Como o Multer (diskStorage) já salvou o arquivo, só precisamos pegar o nome
+      // e construir a URL apontando para a nossa própria API (localhost:3333/files/...)
+      const port = process.env.PORT || 3333;
+      imagem_url = `http://localhost:${port}/files/${file.filename}`;
     }
 
     const product = await prismaClient.product.create({

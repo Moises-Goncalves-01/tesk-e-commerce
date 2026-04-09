@@ -16,9 +16,12 @@ class CreateOrderService {
       throw new Error('Seu carrinho está vazio.');
     }
 
-    // 2. Calcular o valor total do pedido
+    // 2. Calcular o valor total do pedido e checar estoque em tempo real
     let total = 0;
     for (const item of cartItems) {
+      if (item.quantidade > item.product.estoque) {
+        throw new Error(`O produto "${item.product.nome}" ultrapassa o estoque atual disponível.`);
+      }
       total += item.product.preco * item.quantidade;
     }
 
@@ -47,6 +50,18 @@ class CreateOrderService {
       await prisma.orderItem.createMany({
         data: orderItemsToInsert
       });
+
+      // 4.5. Descontar o estoque dos produtos
+      for (const item of cartItems) {
+        await prisma.product.update({
+          where: { id: item.product_id },
+          data: {
+            estoque: {
+              decrement: item.quantidade
+            }
+          }
+        });
+      }
 
       // 5. Limpar o carrinho do usuário
       await prisma.cartItem.deleteMany({
